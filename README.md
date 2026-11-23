@@ -4,18 +4,18 @@ Frontend cho nền tảng đấu giá trực tuyến. Cấu trúc theo [bulletpr
 
 ## Công nghệ
 
-| Mục đích | Thư viện |
-|---|---|
-| Build / dev server | Vite |
-| UI | React 19 |
-| Routing | React Router (lazy route) |
-| Gọi API | **Axios** (`src/lib/api-client.js`) |
-| Server state | TanStack Query |
-| Client state | Zustand |
-| Form + validate | React Hook Form + Zod |
-| CSS | Tailwind CSS v4 |
-| Test | Vitest + Testing Library |
-| Lint / format | ESLint (có luật kiến trúc) + Prettier |
+| Mục đích           | Thư viện                              |
+| ------------------ | ------------------------------------- |
+| Build / dev server | Vite                                  |
+| UI                 | React 19                              |
+| Routing            | React Router (lazy route)             |
+| Gọi API            | **Axios** (`src/lib/api-client.js`)   |
+| Server state       | TanStack Query                        |
+| Client state       | Zustand                               |
+| Form + validate    | React Hook Form + Zod                 |
+| CSS                | Tailwind CSS v4                       |
+| Test               | Vitest + Testing Library              |
+| Lint / format      | ESLint (có luật kiến trúc) + Prettier |
 
 ## Bắt đầu
 
@@ -29,14 +29,14 @@ npm run dev                 # http://localhost:3000
 
 Backend (`be-auction-platform`) chạy ở `http://localhost:8080`. Mọi request `/api/*` từ dev server được proxy sang backend nên không cần cấu hình CORS.
 
-| Lệnh | Việc |
-|---|---|
-| `npm run dev` | Chạy dev |
-| `npm run build` | Build production ra `dist/` |
-| `npm run preview` | Xem bản build |
-| `npm run lint` | Kiểm tra lint + luật kiến trúc |
-| `npm run format` | Format code |
-| `npm test` | Chạy test |
+| Lệnh              | Việc                           |
+| ----------------- | ------------------------------ |
+| `npm run dev`     | Chạy dev                       |
+| `npm run build`   | Build production ra `dist/`    |
+| `npm run preview` | Xem bản build                  |
+| `npm run lint`    | Kiểm tra lint + luật kiến trúc |
+| `npm run format`  | Format code                    |
+| `npm test`        | Chạy test                      |
 
 ## Cấu trúc thư mục
 
@@ -81,9 +81,10 @@ Một feature chỉ tạo những thư mục nó cần: `api/`, `components/`, `
 ```js
 import { api } from '@/lib/api-client';
 
-const auction = await api.get(`/auctions/${id}`);          // trả thẳng data
+const auction = await api.get(`/auctions/${id}`); // trả thẳng data
 const res = await api.get('/auctions', { rawResponse: true }); // cần headers (X-Total-Count)
 ```
+
 - JWT tự gắn vào header `Authorization`.
 - Lỗi của GET để component tự hiển thị; lỗi POST/PUT/DELETE tự hiện thông báo (tắt bằng `{ skipErrorNotification: true }`).
 - Mỗi feature khai báo request trong `features/<tên>/api/<hành-động>.js` kèm `queryOptions` và hook `useXxx` (xem `features/auctions/api`).
