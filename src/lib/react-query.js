@@ -1,0 +1,7 @@
+export const queryConfig = {
+  queries: {
+    refetchOnWindowFocus: false,
+    retry: false,
+    staleTime: 60 * 1000,
+  },
+};
