@@ -17,7 +17,8 @@ permissions:
 
 env:
   NODE_VERSION: '24'
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/fe-auction-platform
+  # GHCR image names must be lowercase (the owner login has uppercase letters)
+  IMAGE_NAME: ghcr.io/tuanngo-02/fe-auction-platform
 
 jobs:
   ci:
