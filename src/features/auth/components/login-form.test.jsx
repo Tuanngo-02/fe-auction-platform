@@ -22,27 +22,27 @@ describe('LoginForm', () => {
     const { user } = setup();
     await user.click(screen.getByRole('button', { name: 'Đăng nhập' }));
 
-    expect(await screen.findByText('Vui lòng nhập tên đăng nhập')).toBeInTheDocument();
+    expect(await screen.findByText('Vui lòng nhập email hoặc số điện thoại')).toBeInTheDocument();
     expect(screen.getByText('Vui lòng nhập mật khẩu')).toBeInTheDocument();
     expect(api.post).not.toHaveBeenCalled();
   });
 
   it('đăng nhập thành công: lưu token và gọi onSuccess', async () => {
-    api.post.mockResolvedValue({ id_token: 'jwt-123' });
-    api.get.mockResolvedValue({ login: 'user', authorities: ['ROLE_USER'] });
+    api.post.mockResolvedValue({ data: { accessToken: 'jwt-123', refreshToken: 'ref-123' } });
+    api.get.mockResolvedValue({ data: { userId: 1, fullName: 'Nguyễn Văn A' } });
     const onSuccess = vi.fn();
 
     const { user } = setup(onSuccess);
-    await user.type(screen.getByLabelText('Tên đăng nhập'), 'user');
-    await user.type(screen.getByLabelText('Mật khẩu'), 'user');
+    await user.type(screen.getByLabelText(/Email hoặc Số điện thoại/), 'user@example.com');
+    await user.type(screen.getByLabelText(/Mật khẩu/), 'Password123!');
     await user.click(screen.getByRole('button', { name: 'Đăng nhập' }));
 
     await waitFor(() =>
-      expect(onSuccess).toHaveBeenCalledWith(expect.objectContaining({ login: 'user' })),
+      expect(onSuccess).toHaveBeenCalledWith(expect.objectContaining({ fullName: 'Nguyễn Văn A' })),
     );
     expect(api.post).toHaveBeenCalledWith(
-      '/authenticate',
-      { username: 'user', password: 'user', rememberMe: false },
+      '/auth/login',
+      { emailOrPhone: 'user@example.com', password: 'Password123!' },
       { skipErrorNotification: true },
     );
     expect(storage.getToken()).toBe('jwt-123');
@@ -52,10 +52,12 @@ describe('LoginForm', () => {
     api.post.mockRejectedValue({ response: { status: 401 } });
 
     const { user } = setup();
-    await user.type(screen.getByLabelText('Tên đăng nhập'), 'user');
-    await user.type(screen.getByLabelText('Mật khẩu'), 'sai');
+    await user.type(screen.getByLabelText(/Email hoặc Số điện thoại/), 'user@example.com');
+    await user.type(screen.getByLabelText(/Mật khẩu/), 'sai');
     await user.click(screen.getByRole('button', { name: 'Đăng nhập' }));
 
-    expect(await screen.findByText('Sai tên đăng nhập hoặc mật khẩu')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Sai email/số điện thoại hoặc mật khẩu'),
+    ).toBeInTheDocument();
   });
 });
