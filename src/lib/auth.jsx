@@ -30,11 +30,7 @@ export const registerInputSchema = z
   .object({
     fullName: z.string().trim().min(2, 'Vui lòng nhập họ tên').max(100, 'Họ tên quá dài'),
     email: z.email('Email không hợp lệ').max(254, 'Email quá dài'),
-    phone: z
-      .string()
-      .trim()
-      .min(9, 'Số điện thoại không hợp lệ')
-      .max(20, 'Số điện thoại quá dài'),
+    phone: z.string().trim().min(9, 'Số điện thoại không hợp lệ').max(20, 'Số điện thoại quá dài'),
     birthDate: z.string().optional(),
     password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự').max(100, 'Tối đa 100 ký tự'),
     confirmPassword: z.string(),

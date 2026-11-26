@@ -13,12 +13,45 @@ import { useUser } from '@/lib/auth';
 import { cn } from '@/utils/cn';
 
 const auctionMenuItems = [
-  { id: 'participated', label: 'Các phiên đã tham gia', icon: 'gavel', count: 3, to: paths.auctions.getHref() },
-  { id: 'bid-history', label: 'Lịch sử đấu giá cá nhân', icon: 'history', to: paths.auctions.getHref() },
-  { id: 'results', label: 'Kết quả đấu giá của tôi', icon: 'emoji_events', to: paths.auctions.getHref() },
-  { id: 'watchlist', label: 'Danh sách phiên yêu thích', icon: 'favorite', count: 6, to: paths.auctions.getHref() },
-  { id: 'orders', label: 'Đơn hàng của tôi', icon: 'receipt_long', count: 4, to: paths.auctions.getHref() },
-  { id: 'wallet', label: 'Ví ký quỹ & thanh toán', icon: 'account_balance_wallet', to: paths.auctions.getHref() },
+  {
+    id: 'participated',
+    label: 'Các phiên đã tham gia',
+    icon: 'gavel',
+    count: 3,
+    to: paths.auctions.getHref(),
+  },
+  {
+    id: 'bid-history',
+    label: 'Lịch sử đấu giá cá nhân',
+    icon: 'history',
+    to: paths.auctions.getHref(),
+  },
+  {
+    id: 'results',
+    label: 'Kết quả đấu giá của tôi',
+    icon: 'emoji_events',
+    to: paths.auctions.getHref(),
+  },
+  {
+    id: 'watchlist',
+    label: 'Danh sách phiên yêu thích',
+    icon: 'favorite',
+    count: 6,
+    to: paths.auctions.getHref(),
+  },
+  {
+    id: 'orders',
+    label: 'Đơn hàng của tôi',
+    icon: 'receipt_long',
+    count: 4,
+    to: paths.auctions.getHref(),
+  },
+  {
+    id: 'wallet',
+    label: 'Ví ký quỹ & thanh toán',
+    icon: 'account_balance_wallet',
+    to: paths.auctions.getHref(),
+  },
 ];
 
 const profileMenuItems = [
@@ -358,7 +391,9 @@ const ProfileRoute = () => {
               </div>
               <div className="mt-1 font-mono text-base font-bold text-[#09080E]">25.000.000 đ</div>
               <div className="mt-1 flex items-center gap-1 text-[10px] text-[#62626C]">
-                <span className="material-symbols-outlined text-[12px] text-[#605d65]/60">lock</span>
+                <span className="material-symbols-outlined text-[12px] text-[#605d65]/60">
+                  lock
+                </span>
                 <span>
                   Đang phong tỏa cọc: <strong>8.500.000 đ</strong>
                 </span>

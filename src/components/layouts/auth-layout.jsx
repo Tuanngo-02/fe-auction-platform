@@ -162,8 +162,7 @@ export const AuthLayout = ({
                     Tổng đài hỗ trợ pháp lý &amp; thủ tục đấu giá:
                   </div>
                   <div className="text-lg font-bold text-white">
-                    1900-8899{' '}
-                    <span className="text-xs font-normal text-[#fe6807]">(24/7)</span>
+                    1900-8899 <span className="text-xs font-normal text-[#fe6807]">(24/7)</span>
                   </div>
                 </div>
               </div>

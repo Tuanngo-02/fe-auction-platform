@@ -84,9 +84,7 @@ export const SellerVerificationForm = ({ sellerStatus }) => {
             {...register('idCardNumber')}
           />
           {errors.idCardNumber && (
-            <p className="mt-1 text-xs font-medium text-[#ba1a1a]">
-              {errors.idCardNumber.message}
-            </p>
+            <p className="mt-1 text-xs font-medium text-[#ba1a1a]">{errors.idCardNumber.message}</p>
           )}
         </div>
 

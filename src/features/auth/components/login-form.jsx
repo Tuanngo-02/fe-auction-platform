@@ -44,11 +44,11 @@ export const LoginForm = ({ onSuccess, registerHref }) => {
       >
         {/* Email / Phone Field */}
         <div>
-          <label
-            className="mb-2 block text-sm font-semibold text-[#09080E]"
-            htmlFor="emailOrPhone"
-          >
-            Email hoặc Số điện thoại <span aria-hidden="true" className="text-[#ba1a1a]">*</span>
+          <label className="mb-2 block text-sm font-semibold text-[#09080E]" htmlFor="emailOrPhone">
+            Email hoặc Số điện thoại{' '}
+            <span aria-hidden="true" className="text-[#ba1a1a]">
+              *
+            </span>
           </label>
           <input
             id="emailOrPhone"
@@ -68,7 +68,10 @@ export const LoginForm = ({ onSuccess, registerHref }) => {
         {/* Password Field */}
         <div>
           <label className="mb-2 block text-sm font-semibold text-[#09080E]" htmlFor="password">
-            Mật khẩu <span aria-hidden="true" className="text-[#ba1a1a]">*</span>
+            Mật khẩu{' '}
+            <span aria-hidden="true" className="text-[#ba1a1a]">
+              *
+            </span>
           </label>
           <div className="relative">
             <input
@@ -91,9 +94,7 @@ export const LoginForm = ({ onSuccess, registerHref }) => {
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1.5 text-xs font-medium text-[#ba1a1a]">
-              {errors.password.message}
-            </p>
+            <p className="mt-1.5 text-xs font-medium text-[#ba1a1a]">{errors.password.message}</p>
           )}
         </div>
 
@@ -126,12 +127,10 @@ export const LoginForm = ({ onSuccess, registerHref }) => {
 
         {/* Primary CTA Button */}
         <div className="pt-2">
-          <Button
-            type="submit"
-            className="w-full text-base font-bold"
-            isLoading={login.isPending}
-          >
-            <span aria-hidden="true" className="material-symbols-outlined text-[20px]">lock_open</span>
+          <Button type="submit" className="w-full text-base font-bold" isLoading={login.isPending}>
+            <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
+              lock_open
+            </span>
             <span>Đăng nhập</span>
           </Button>
         </div>

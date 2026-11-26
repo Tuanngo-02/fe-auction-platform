@@ -5,8 +5,7 @@ const variants = {
   default: 'bg-[#fe6807] text-[#09080E] font-bold hover:bg-[#e05600] shadow-sm',
   dark: 'bg-[#09080E] text-white font-semibold hover:bg-[#2f3039] shadow-sm',
   destructive: 'bg-[#ba1a1a] text-white font-semibold hover:bg-[#93000a]',
-  outline:
-    'border border-[#E5E5E9] bg-white text-[#09080E] font-semibold hover:bg-[#F7F7F5]',
+  outline: 'border border-[#E5E5E9] bg-white text-[#09080E] font-semibold hover:bg-[#F7F7F5]',
   ghost: 'text-[#62626C] hover:bg-[#F7F7F5] hover:text-[#09080E]',
 };
 

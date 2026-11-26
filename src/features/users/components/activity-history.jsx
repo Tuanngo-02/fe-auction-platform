@@ -35,9 +35,7 @@ export const ActivityHistory = () => {
                   <p className="text-sm font-semibold text-[#09080E]">
                     {item.action === 'LOGIN' ? 'Đăng nhập hệ thống' : item.action}
                   </p>
-                  <p className="text-xs text-[#62626C]">
-                    {item.deviceInfo || 'Trình duyệt web'}
-                  </p>
+                  <p className="text-xs text-[#62626C]">{item.deviceInfo || 'Trình duyệt web'}</p>
                 </div>
               </div>
               <span className="font-mono text-xs text-[#62626C]">

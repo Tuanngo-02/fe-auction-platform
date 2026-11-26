@@ -6,8 +6,7 @@ export const updateProfile = (data) => api.put('/users/me', data);
 
 export const changePassword = (data) => api.patch('/users/me/password', data);
 
-export const submitSellerVerification = (data) =>
-  api.post('/users/me/seller-verification', data);
+export const submitSellerVerification = (data) => api.post('/users/me/seller-verification', data);
 
 export const getSellerPublicProfile = async (sellerId) => {
   const res = await api.get(`/sellers/${sellerId}/profile`);

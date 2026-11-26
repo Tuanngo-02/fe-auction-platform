@@ -56,8 +56,6 @@ describe('LoginForm', () => {
     await user.type(screen.getByLabelText(/Mật khẩu/), 'sai');
     await user.click(screen.getByRole('button', { name: 'Đăng nhập' }));
 
-    expect(
-      await screen.findByText('Sai email/số điện thoại hoặc mật khẩu'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Sai email/số điện thoại hoặc mật khẩu')).toBeInTheDocument();
   });
 });
