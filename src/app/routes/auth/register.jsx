@@ -9,7 +9,12 @@ const RegisterRoute = () => {
   const redirectTo = searchParams.get('redirectTo');
 
   return (
-    <AuthLayout title="Đăng ký tài khoản">
+    <AuthLayout
+      title="Đăng ký tài khoản"
+      breadcrumbLabel="Tạo tài khoản thành viên"
+      headline="Không gian đấu giá đỉnh cao & minh bạch"
+      tagline="Khám phá và sở hữu kiệt tác nghệ thuật, tài sản giá trị cùng hệ thống giám sát chuẩn mực quốc tế."
+    >
       <RegisterForm loginHref={paths.auth.login.getHref(redirectTo)} />
     </AuthLayout>
   );

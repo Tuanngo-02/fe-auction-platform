@@ -15,6 +15,14 @@ export const paths = {
       path: '/auth/register',
       getHref: (redirectTo) => withRedirect('/auth/register', redirectTo),
     },
+    verifyEmail: {
+      path: '/auth/verify-email',
+      getHref: (email) => `/auth/verify-email${email ? `?email=${encodeURIComponent(email)}` : ''}`,
+    },
+    forgotPassword: {
+      path: '/auth/forgot-password',
+      getHref: () => '/auth/forgot-password',
+    },
   },
   auctions: {
     path: '/auctions',
@@ -23,6 +31,10 @@ export const paths = {
   auction: {
     path: '/auctions/:auctionId',
     getHref: (id) => `/auctions/${id}`,
+  },
+  seller: {
+    path: '/sellers/:sellerId',
+    getHref: (id) => `/sellers/${id}`,
   },
   app: {
     root: {

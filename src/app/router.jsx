@@ -16,6 +16,14 @@ export const createAppRouter = () =>
       path: paths.auth.register.path,
       lazy: () => import('./routes/auth/register').then(convert),
     },
+    {
+      path: paths.auth.verifyEmail.path,
+      lazy: () => import('./routes/auth/verify-email').then(convert),
+    },
+    {
+      path: paths.auth.forgotPassword.path,
+      lazy: () => import('./routes/auth/forgot-password').then(convert),
+    },
     // Các trang công khai, dùng layout chính
     {
       lazy: () => import('./routes/root').then(convert),
@@ -28,6 +36,10 @@ export const createAppRouter = () =>
         {
           path: paths.auction.path,
           lazy: () => import('./routes/auctions/auction').then(convert),
+        },
+        {
+          path: paths.seller.path,
+          lazy: () => import('./routes/sellers/seller').then(convert),
         },
       ],
     },

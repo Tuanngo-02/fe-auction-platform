@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
       // Proxy /api sang backend Spring Boot để tránh CORS khi dev
       proxy: {
         '/api': {
-          target: env.VITE_APP_BACKEND_URL || 'http://localhost:8080',
+          target: env.VITE_APP_BACKEND_URL || 'http://localhost:8081',
           changeOrigin: true,
         },
       },

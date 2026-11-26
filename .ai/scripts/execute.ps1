@@ -1,4 +1,4 @@
-﻿
+
 param([Parameter(Mandatory=$true)][string]$Task)
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8

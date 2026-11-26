@@ -10,7 +10,7 @@ const LoginRoute = () => {
   const redirectTo = searchParams.get('redirectTo');
 
   return (
-    <AuthLayout title="Đăng nhập">
+    <AuthLayout title="Đăng nhập" breadcrumbLabel="Đăng nhập tài khoản">
       <LoginForm
         registerHref={paths.auth.register.getHref(redirectTo)}
         onSuccess={() => navigate(redirectTo || paths.home.getHref(), { replace: true })}

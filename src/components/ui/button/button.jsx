@@ -2,16 +2,18 @@ import { Spinner } from '@/components/ui/spinner/spinner';
 import { cn } from '@/utils/cn';
 
 const variants = {
-  default: 'bg-brand-600 text-white hover:bg-brand-700',
-  destructive: 'bg-red-600 text-white hover:bg-red-700',
-  outline: 'border border-slate-300 bg-white hover:bg-slate-100',
-  ghost: 'hover:bg-slate-100',
+  default: 'bg-[#fe6807] text-[#09080E] font-bold hover:bg-[#e05600] shadow-sm',
+  dark: 'bg-[#09080E] text-white font-semibold hover:bg-[#2f3039] shadow-sm',
+  destructive: 'bg-[#ba1a1a] text-white font-semibold hover:bg-[#93000a]',
+  outline:
+    'border border-[#E5E5E9] bg-white text-[#09080E] font-semibold hover:bg-[#F7F7F5]',
+  ghost: 'text-[#62626C] hover:bg-[#F7F7F5] hover:text-[#09080E]',
 };
 
 const sizes = {
-  default: 'h-10 px-4 py-2',
-  sm: 'h-8 px-3 text-xs',
-  lg: 'h-11 px-8',
+  default: 'h-[44px] px-5 py-2 text-sm',
+  sm: 'h-9 px-3.5 text-xs',
+  lg: 'h-12 px-8 text-base',
 };
 
 export const Button = ({
@@ -29,8 +31,8 @@ export const Button = ({
       type={type}
       disabled={disabled || isLoading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+        'inline-flex items-center justify-center gap-2 rounded-lg transition-all duration-150 active:translate-y-px',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#09080E]',
         'disabled:pointer-events-none disabled:opacity-50',
         variants[variant],
         sizes[size],
