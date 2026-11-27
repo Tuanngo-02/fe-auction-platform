@@ -52,6 +52,14 @@ export const createAppRouter = () =>
           path: paths.app.profile.path,
           lazy: () => import('./routes/app/profile').then(convert),
         },
+        {
+          path: paths.app.admin.path,
+          lazy: () => import('./routes/app/admin').then(convert),
+        },
+        {
+          path: paths.app.sellerHome.path,
+          lazy: () => import('./routes/app/seller').then(convert),
+        },
       ],
     },
     {

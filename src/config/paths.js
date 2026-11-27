@@ -43,7 +43,15 @@ export const paths = {
     },
     profile: {
       path: 'profile',
-      getHref: () => '/app/profile',
+      getHref: (tab) => `/app/profile${tab ? `?tab=${encodeURIComponent(tab)}` : ''}`,
+    },
+    admin: {
+      path: 'admin',
+      getHref: () => '/app/admin',
+    },
+    sellerHome: {
+      path: 'seller',
+      getHref: () => '/app/seller',
     },
   },
 };

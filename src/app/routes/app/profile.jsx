@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 
 import { Head } from '@/components/seo/head';
 import { paths } from '@/config/paths';
@@ -11,48 +10,7 @@ import { ProfileEditForm } from '@/features/users/components/profile-edit-form';
 import { SellerVerificationForm } from '@/features/users/components/seller-verification-form';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/utils/cn';
-
-const auctionMenuItems = [
-  {
-    id: 'participated',
-    label: 'Các phiên đã tham gia',
-    icon: 'gavel',
-    count: 3,
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'bid-history',
-    label: 'Lịch sử đấu giá cá nhân',
-    icon: 'history',
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'results',
-    label: 'Kết quả đấu giá của tôi',
-    icon: 'emoji_events',
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'watchlist',
-    label: 'Danh sách phiên yêu thích',
-    icon: 'favorite',
-    count: 6,
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'orders',
-    label: 'Đơn hàng của tôi',
-    icon: 'receipt_long',
-    count: 4,
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'wallet',
-    label: 'Ví ký quỹ & thanh toán',
-    icon: 'account_balance_wallet',
-    to: paths.auctions.getHref(),
-  },
-];
+import { formatCurrency } from '@/utils/format';
 
 const profileMenuItems = [
   { id: 'overview', label: 'Hồ sơ cá nhân', icon: 'badge' },
@@ -63,6 +21,34 @@ const profileMenuItems = [
   { id: 'seller', label: 'Xác minh người bán', badge: 'Nâng cấp', icon: 'storefront' },
   { id: 'activities', label: 'Lịch sử hoạt động', icon: 'manage_search' },
 ];
+
+const ROLE_LABELS = {
+  ROLE_SUPER_ADMIN: 'Super Admin',
+  ROLE_SYSTEM_ADMIN: 'Quản trị hệ thống',
+  ROLE_AUCTION_ADMIN: 'Quản trị đấu giá',
+  ROLE_FINANCE_ADMIN: 'Quản trị tài chính',
+  ROLE_SUPPORT_ADMIN: 'Quản trị hỗ trợ',
+  ROLE_SELLER: 'Người bán',
+  ROLE_BIDDER: 'Đấu giá viên',
+};
+
+const formatUserRoleLabel = (roles = []) => {
+  const priority = [
+    'ROLE_SUPER_ADMIN',
+    'ROLE_SYSTEM_ADMIN',
+    'ROLE_AUCTION_ADMIN',
+    'ROLE_FINANCE_ADMIN',
+    'ROLE_SUPPORT_ADMIN',
+  ];
+  const adminRoles = priority.filter((r) => roles.includes(r)).map((r) => ROLE_LABELS[r]);
+  if (adminRoles.length > 0) return adminRoles.join(' & ');
+
+  const userRoles = ['ROLE_BIDDER', 'ROLE_SELLER'].filter((r) => roles.includes(r));
+  if (userRoles.includes('ROLE_BIDDER')) return ROLE_LABELS.ROLE_BIDDER;
+  if (userRoles.includes('ROLE_SELLER')) return ROLE_LABELS.ROLE_SELLER;
+
+  return roles.length > 0 ? roles.map((r) => ROLE_LABELS[r] || r.replace(/^ROLE_/, '')).join(' & ') : 'Thành viên';
+};
 
 const ProfileOverview = ({ user, onTabChange }) => {
   const displayName = user.fullName || user.email || 'Thành viên';
@@ -166,7 +152,7 @@ const ProfileOverview = ({ user, onTabChange }) => {
               Số Căn cước công dân / Định danh
             </span>
             <div className="flex items-center justify-between rounded-lg border border-[#E5E5E9] bg-[#F7F7F5] px-3.5 py-2.5 font-mono text-sm font-bold text-[#09080E]">
-              <span>{isVerified ? '048095******' : 'Chưa cập nhật'}</span>
+              <span>{user.maskedIdCard || 'Chưa cập nhật'}</span>
               <span
                 className="material-symbols-outlined text-base text-[#605d65]/60"
                 title="Bảo mật một phần thông tin"
@@ -253,6 +239,34 @@ const ProfileOverview = ({ user, onTabChange }) => {
               </div>
             </div>
           </div>
+
+          <div className="flex flex-col justify-between gap-3 pt-4 sm:flex-row sm:items-start">
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined mt-0.5 text-lg text-[#605d65]/70">
+                home_pin
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-[#62626C]">
+                    Địa chỉ liên hệ &amp; nhận bàn giao hồ sơ/tài sản:
+                  </span>
+                  <span className="inline-flex items-center rounded border border-[#E5E5E9] bg-[#F7F7F5] px-2 py-0.5 text-[11px] font-semibold text-[#09080E]">
+                    Mặc định
+                  </span>
+                </div>
+                <div className="mt-1 text-sm font-medium leading-snug text-[#09080E]">
+                  {user.defaultAddress || 'Chưa có địa chỉ mặc định'}
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onTabChange('addresses')}
+              className="h-8 self-start whitespace-nowrap rounded-lg border border-[#E5E5E9] px-3 text-xs font-semibold text-[#09080E] transition-colors hover:bg-[#F7F7F5] sm:self-auto"
+            >
+              Cập nhật địa chỉ
+            </button>
+          </div>
         </div>
       </div>
 
@@ -278,7 +292,7 @@ const ProfileOverview = ({ user, onTabChange }) => {
           <div className="rounded-xl border border-[#E5E5E9] bg-[#F7F7F5] p-4">
             <div className="text-xs font-medium text-[#62626C]">Vai trò hiện tại</div>
             <div className="mt-1 flex items-center gap-1.5 text-base font-bold text-[#09080E]">
-              <span>{user.roles?.includes('ROLE_SELLER') ? 'Seller & Bidder' : 'Bidder'}</span>
+              <span>{formatUserRoleLabel(user.roles)}</span>
               <span className="material-symbols-outlined text-base text-[#FE6807]">gavel</span>
             </div>
             <div className="mt-1 text-[11px] leading-normal text-[#62626C]">
@@ -316,7 +330,9 @@ const ProfileOverview = ({ user, onTabChange }) => {
 };
 
 const ProfileRoute = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'overview';
+  const setActiveTab = (tab) => setSearchParams(tab === 'overview' ? {} : { tab });
   const user = useUser();
   const u = user.data;
   if (!u) return null;
@@ -328,6 +344,33 @@ const ProfileRoute = () => {
     .slice(-2)
     .join('')
     .toUpperCase();
+
+  const auctionMenuItems = [
+    {
+      id: 'participated',
+      label: 'Các phiên đã tham gia',
+      icon: 'gavel',
+      count: u.participatedCount ?? 0,
+      to: paths.auctions.getHref(),
+    },
+    { id: 'bid-history', label: 'Lịch sử đấu giá cá nhân', icon: 'history', to: paths.auctions.getHref() },
+    { id: 'results', label: 'Kết quả đấu giá của tôi', icon: 'emoji_events', to: paths.auctions.getHref() },
+    {
+      id: 'watchlist',
+      label: 'Danh sách phiên yêu thích',
+      icon: 'favorite',
+      count: u.watchlistCount ?? 0,
+      to: paths.auctions.getHref(),
+    },
+    {
+      id: 'orders',
+      label: 'Đơn hàng của tôi',
+      icon: 'receipt_long',
+      count: u.ordersCount ?? 0,
+      to: paths.auctions.getHref(),
+    },
+    { id: 'wallet', label: 'Ví ký quỹ & thanh toán', icon: 'account_balance_wallet', to: paths.auctions.getHref() },
+  ];
 
   const currentItem = profileMenuItems.find((m) => m.id === activeTab);
 
@@ -373,7 +416,7 @@ const ProfileRoute = () => {
                 <p className="font-mono text-xs text-[#62626C]">BID-{u.userId}</p>
                 <div className="mt-1 inline-flex items-center gap-1.5 rounded border border-[#BBF7D0] bg-[#DCFCE7] px-2 py-0.5 text-[11px] font-semibold text-[#166534]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#166534]" />
-                  <span>Đấu giá viên (Online)</span>
+                  <span>{formatUserRoleLabel(u.roles)} (Online)</span>
                 </div>
               </div>
             </div>
@@ -389,13 +432,15 @@ const ProfileRoute = () => {
                   + Nạp thêm
                 </button>
               </div>
-              <div className="mt-1 font-mono text-base font-bold text-[#09080E]">25.000.000 đ</div>
+              <div className="mt-1 font-mono text-base font-bold text-[#09080E]">
+                {formatCurrency(u.availableBalance ?? 0)}
+              </div>
               <div className="mt-1 flex items-center gap-1 text-[10px] text-[#62626C]">
                 <span className="material-symbols-outlined text-[12px] text-[#605d65]/60">
                   lock
                 </span>
                 <span>
-                  Đang phong tỏa cọc: <strong>8.500.000 đ</strong>
+                  Đang phong tỏa cọc: <strong>{formatCurrency(u.lockedDeposit ?? 0)}</strong>
                 </span>
               </div>
             </div>

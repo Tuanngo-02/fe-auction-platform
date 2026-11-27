@@ -25,8 +25,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+const ERROR_KEY_MESSAGES = {
+  'error.phoneexists': 'Số điện thoại đã được sử dụng',
+  'error.emailexists': 'Email đã được sử dụng',
+  'error.otpinvalid': 'Mã OTP không đúng hoặc đã hết hạn',
+  'error.emailnotverified': 'Email chưa được xác minh',
+  'error.alreadyverified': 'Email đã được xác minh trước đó',
+};
+
 export const getErrorMessage = (error) => {
   const data = error?.response?.data;
+  if (data?.message && ERROR_KEY_MESSAGES[data.message]) {
+    return ERROR_KEY_MESSAGES[data.message];
+  }
   return data?.detail || data?.title || data?.message || error?.message || 'Đã có lỗi xảy ra';
 };
 
