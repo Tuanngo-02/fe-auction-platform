@@ -11,48 +11,7 @@ import { ProfileEditForm } from '@/features/users/components/profile-edit-form';
 import { SellerVerificationForm } from '@/features/users/components/seller-verification-form';
 import { useUser } from '@/lib/auth';
 import { cn } from '@/utils/cn';
-
-const auctionMenuItems = [
-  {
-    id: 'participated',
-    label: 'Các phiên đã tham gia',
-    icon: 'gavel',
-    count: 3,
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'bid-history',
-    label: 'Lịch sử đấu giá cá nhân',
-    icon: 'history',
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'results',
-    label: 'Kết quả đấu giá của tôi',
-    icon: 'emoji_events',
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'watchlist',
-    label: 'Danh sách phiên yêu thích',
-    icon: 'favorite',
-    count: 6,
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'orders',
-    label: 'Đơn hàng của tôi',
-    icon: 'receipt_long',
-    count: 4,
-    to: paths.auctions.getHref(),
-  },
-  {
-    id: 'wallet',
-    label: 'Ví ký quỹ & thanh toán',
-    icon: 'account_balance_wallet',
-    to: paths.auctions.getHref(),
-  },
-];
+import { formatCurrency } from '@/utils/format';
 
 const profileMenuItems = [
   { id: 'overview', label: 'Hồ sơ cá nhân', icon: 'badge' },
@@ -166,7 +125,7 @@ const ProfileOverview = ({ user, onTabChange }) => {
               Số Căn cước công dân / Định danh
             </span>
             <div className="flex items-center justify-between rounded-lg border border-[#E5E5E9] bg-[#F7F7F5] px-3.5 py-2.5 font-mono text-sm font-bold text-[#09080E]">
-              <span>{isVerified ? '048095******' : 'Chưa cập nhật'}</span>
+              <span>{user.maskedIdCard || 'Chưa cập nhật'}</span>
               <span
                 className="material-symbols-outlined text-base text-[#605d65]/60"
                 title="Bảo mật một phần thông tin"
@@ -253,6 +212,34 @@ const ProfileOverview = ({ user, onTabChange }) => {
               </div>
             </div>
           </div>
+
+          <div className="flex flex-col justify-between gap-3 pt-4 sm:flex-row sm:items-start">
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined mt-0.5 text-lg text-[#605d65]/70">
+                home_pin
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-[#62626C]">
+                    Địa chỉ liên hệ &amp; nhận bàn giao hồ sơ/tài sản:
+                  </span>
+                  <span className="inline-flex items-center rounded border border-[#E5E5E9] bg-[#F7F7F5] px-2 py-0.5 text-[11px] font-semibold text-[#09080E]">
+                    Mặc định
+                  </span>
+                </div>
+                <div className="mt-1 text-sm font-medium leading-snug text-[#09080E]">
+                  {user.defaultAddress || 'Chưa có địa chỉ mặc định'}
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onTabChange('addresses')}
+              className="h-8 self-start whitespace-nowrap rounded-lg border border-[#E5E5E9] px-3 text-xs font-semibold text-[#09080E] transition-colors hover:bg-[#F7F7F5] sm:self-auto"
+            >
+              Cập nhật địa chỉ
+            </button>
+          </div>
         </div>
       </div>
 
@@ -329,6 +316,33 @@ const ProfileRoute = () => {
     .join('')
     .toUpperCase();
 
+  const auctionMenuItems = [
+    {
+      id: 'participated',
+      label: 'Các phiên đã tham gia',
+      icon: 'gavel',
+      count: u.participatedCount ?? 0,
+      to: paths.auctions.getHref(),
+    },
+    { id: 'bid-history', label: 'Lịch sử đấu giá cá nhân', icon: 'history', to: paths.auctions.getHref() },
+    { id: 'results', label: 'Kết quả đấu giá của tôi', icon: 'emoji_events', to: paths.auctions.getHref() },
+    {
+      id: 'watchlist',
+      label: 'Danh sách phiên yêu thích',
+      icon: 'favorite',
+      count: u.watchlistCount ?? 0,
+      to: paths.auctions.getHref(),
+    },
+    {
+      id: 'orders',
+      label: 'Đơn hàng của tôi',
+      icon: 'receipt_long',
+      count: u.ordersCount ?? 0,
+      to: paths.auctions.getHref(),
+    },
+    { id: 'wallet', label: 'Ví ký quỹ & thanh toán', icon: 'account_balance_wallet', to: paths.auctions.getHref() },
+  ];
+
   const currentItem = profileMenuItems.find((m) => m.id === activeTab);
 
   return (
@@ -389,13 +403,15 @@ const ProfileRoute = () => {
                   + Nạp thêm
                 </button>
               </div>
-              <div className="mt-1 font-mono text-base font-bold text-[#09080E]">25.000.000 đ</div>
+              <div className="mt-1 font-mono text-base font-bold text-[#09080E]">
+                {formatCurrency(u.availableBalance ?? 0)}
+              </div>
               <div className="mt-1 flex items-center gap-1 text-[10px] text-[#62626C]">
                 <span className="material-symbols-outlined text-[12px] text-[#605d65]/60">
                   lock
                 </span>
                 <span>
-                  Đang phong tỏa cọc: <strong>8.500.000 đ</strong>
+                  Đang phong tỏa cọc: <strong>{formatCurrency(u.lockedDeposit ?? 0)}</strong>
                 </span>
               </div>
             </div>
