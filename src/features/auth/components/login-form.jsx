@@ -1,15 +1,31 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button/button';
 import { paths } from '@/config/paths';
+import { api, getErrorMessage } from '@/lib/api-client';
 import { loginInputSchema, useLogin } from '@/lib/auth';
 
 export const LoginForm = ({ onSuccess, registerHref }) => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [unverifiedIdentifier, setUnverifiedIdentifier] = useState('');
+  const [showVerifyPopup, setShowVerifyPopup] = useState(false);
+
   const login = useLogin({ onSuccess });
+  const resendOtp = useMutation({
+    mutationFn: (emailOrPhone) =>
+      api.post('/auth/resend-verify-email-otp', { emailOrPhone }, { skipErrorNotification: true }),
+    onSuccess: (res) => {
+      const targetEmail = res?.data?.email || res?.email || unverifiedIdentifier;
+      setShowVerifyPopup(false);
+      navigate(paths.auth.verifyEmail.getHref(targetEmail));
+    },
+  });
+
   const {
     register,
     handleSubmit,
@@ -20,11 +36,14 @@ export const LoginForm = ({ onSuccess, registerHref }) => {
   });
 
   const status = login.error?.response?.status;
-  const serverError = login.isError
-    ? status === 401
-      ? 'Sai email/số điện thoại hoặc mật khẩu'
-      : 'Không thể đăng nhập, vui lòng thử lại'
-    : null;
+  const errorMessageKey = login.error?.response?.data?.message;
+  const isEmailNotVerified = status === 400 && errorMessageKey === 'error.emailnotverified';
+  const serverError =
+    login.isError && !isEmailNotVerified
+      ? status === 401
+        ? 'Sai email/số điện thoại hoặc mật khẩu'
+        : getErrorMessage(login.error)
+      : null;
 
   return (
     <div>
@@ -38,7 +57,19 @@ export const LoginForm = ({ onSuccess, registerHref }) => {
       <div className="mb-6 h-px w-full bg-[#E5E5E9]" />
 
       <form
-        onSubmit={handleSubmit((values) => login.mutate(values))}
+        onSubmit={handleSubmit((values) => {
+          login.mutate(values, {
+            onError: (err) => {
+              if (
+                err?.response?.status === 400 &&
+                err?.response?.data?.message === 'error.emailnotverified'
+              ) {
+                setUnverifiedIdentifier(values.emailOrPhone);
+                setShowVerifyPopup(true);
+              }
+            },
+          });
+        })}
         className="space-y-5"
         noValidate
       >
@@ -135,22 +166,7 @@ export const LoginForm = ({ onSuccess, registerHref }) => {
           </Button>
         </div>
 
-        {/* Unactivated Account Notice Banner */}
-        <div className="mt-4 flex items-start gap-3 rounded-lg border border-[#FDE68A] bg-[#FFFBEB] p-3.5">
-          <span className="material-symbols-outlined filled-symbol mt-0.5 text-[20px] text-[#854D0E]">
-            notifications_active
-          </span>
-          <div className="text-sm font-semibold text-[#854D0E]">
-            <span>Tài khoản chưa kích hoạt? </span>
-            <Link
-              to={paths.auth.verifyEmail.getHref()}
-              className="font-semibold text-[#854D0E] underline hover:text-[#561d00]"
-            >
-              Xác thực email ngay
-            </Link>
-          </div>
-        </div>
-
+        
         {/* Redirect to Sign-up */}
         <div className="border-t border-[#E5E5E9] pt-4 text-center">
           <p className="text-sm text-[#62626C]">
@@ -161,6 +177,51 @@ export const LoginForm = ({ onSuccess, registerHref }) => {
           </p>
         </div>
       </form>
+      {/* Popup xác minh email khi tài khoản chưa kích hoạt OTP */}
+      {showVerifyPopup && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="verify-email-popup-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-[#E5E5E9] bg-white p-6 shadow-xl">
+            <div className="mb-3 flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-2xl text-[#FE6807]">
+                mark_email_unread
+              </span>
+              <h2 id="verify-email-popup-title" className="text-lg font-bold text-[#09080E]">
+                Email chưa được xác minh
+              </h2>
+            </div>
+            <p className="text-sm leading-relaxed text-[#62626C]">
+              Email của tài khoản chưa được xác minh, hãy xác minh để tiếp tục đăng nhập.
+            </p>
+            {resendOtp.isError && (
+              <p role="alert" className="mt-3 rounded-md bg-red-50 p-2.5 text-xs text-red-700">
+                {getErrorMessage(resendOtp.error)}
+              </p>
+            )}
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowVerifyPopup(false)}
+                disabled={resendOtp.isPending}
+              >
+                Để sau
+              </Button>
+              <Button
+                type="button"
+                isLoading={resendOtp.isPending}
+                onClick={() => resendOtp.mutate(unverifiedIdentifier)}
+              >
+                Gửi OTP đến email
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
