@@ -70,10 +70,10 @@ export const useLogin = ({ onSuccess } = {}) => {
 
 export const useRegister = ({ onSuccess } = {}) => {
   return useMutation({
-    mutationFn: ({ fullName, email, phone, password, birthDate }) =>
+    mutationFn: ({ fullName, email, phone, password, birthDate, role }) =>
       api.post(
         '/auth/register',
-        { fullName, email, phone, password, birthDate: birthDate || null },
+        { fullName, email, phone, password, birthDate: birthDate || null, role: role || 'BIDDER' },
         { skipErrorNotification: true },
       ),
     onSuccess,

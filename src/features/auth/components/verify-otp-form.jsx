@@ -6,11 +6,10 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button/button';
 import { Input } from '@/components/ui/form/input';
 import { paths } from '@/config/paths';
-import { getErrorMessage } from '@/lib/api-client';
 import { useVerifyEmailOtp } from '@/features/auth/api/verify-otp';
+import { getErrorMessage } from '@/lib/api-client';
 
 const schema = z.object({
-  email: z.email('Email không hợp lệ'),
   otpCode: z.string().trim().length(6, 'Mã OTP gồm 6 chữ số'),
 });
 
@@ -22,7 +21,7 @@ export const VerifyOtpForm = ({ defaultEmail = '' }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { email: defaultEmail, otpCode: '' },
+    defaultValues: { otpCode: '' },
   });
 
   if (verify.isSuccess) {
@@ -41,15 +40,37 @@ export const VerifyOtpForm = ({ defaultEmail = '' }) => {
     );
   }
 
+  if (!defaultEmail) {
+    return (
+      <div className="space-y-4 text-center">
+        <p className="rounded-md bg-amber-50 p-4 text-sm text-amber-800">
+          Không tìm thấy thông tin email cần xác thực. Vui lòng đăng ký hoặc đăng nhập lại.
+        </p>
+        <Link
+          to={paths.auth.login.getHref()}
+          className="inline-block rounded-md bg-[#09080E] px-4 py-2 text-sm font-semibold text-white"
+        >
+          Quay lại đăng nhập
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit((v) => verify.mutate(v))} className="space-y-4" noValidate>
-      <p className="text-sm text-slate-600">
-        Vui lòng nhập mã OTP 6 chữ số đã được gửi tới email của bạn để kích hoạt tài khoản.
-      </p>
-      <Input label="Email" type="email" error={errors.email} registration={register('email')} />
+    <form
+      onSubmit={handleSubmit((v) => verify.mutate({ email: defaultEmail, otpCode: v.otpCode }))}
+      className="space-y-4"
+      noValidate
+    >
+      <div className="rounded-lg border border-[#E5E5E9] bg-[#F7F7F5] p-3.5 text-sm text-[#62626C]">
+        Mã OTP đã được gửi đến{' '}
+        <span className="font-semibold text-[#09080E]">{defaultEmail}</span>. Vui lòng kiểm tra
+        hộp thư và nhập mã gồm 6 chữ số bên dưới để kích hoạt tài khoản.
+      </div>
       <Input
         label="Mã OTP"
-        placeholder="123456"
+        placeholder="Nhập 6 chữ số (VD: 123456)"
+        maxLength={6}
         error={errors.otpCode}
         registration={register('otpCode')}
       />

@@ -109,7 +109,7 @@ export const RegisterForm = ({ loginHref }) => {
 
       {/* Form Fields */}
       <form
-        onSubmit={handleSubmit((values) => registering.mutate(values))}
+        onSubmit={handleSubmit((values) => registering.mutate({ ...values, role }))}
         className="space-y-4"
         noValidate
       >
