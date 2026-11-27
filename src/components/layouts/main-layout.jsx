@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
 
+import { Button } from '@/components/ui/button/button';
 import { paths } from '@/config/paths';
 import { useLogout, useUser } from '@/lib/auth';
 import { cn } from '@/utils/cn';
@@ -12,7 +14,19 @@ const navItems = [
 export const MainLayout = ({ children }) => {
   const user = useUser();
   const navigate = useNavigate();
+  const [showSellerPopup, setShowSellerPopup] = useState(false);
   const logout = useLogout({ onSuccess: () => navigate(paths.home.getHref()) });
+
+  const roles = user.data?.roles || [];
+  const hasSellerAccess = roles.includes('ROLE_SELLER') && roles.includes('ROLE_BIDDER');
+
+  const handleOpenStore = () => {
+    if (hasSellerAccess) {
+      navigate(paths.app.sellerHome.getHref());
+      return;
+    }
+    setShowSellerPopup(true);
+  };
 
   const displayName =
     user.data?.fullName || user.data?.firstName || user.data?.email || 'Thành viên';
@@ -114,6 +128,14 @@ export const MainLayout = ({ children }) => {
                 </Link>
                 <button
                   type="button"
+                  onClick={handleOpenStore}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[#FE6807] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#e05800]"
+                >
+                  <span className="material-symbols-outlined text-sm">storefront</span>
+                  <span>Cửa hàng của bạn</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => logout.mutate()}
                   title="Đăng xuất"
                   className="inline-flex items-center gap-1 rounded-lg border border-white/20 px-2.5 py-1.5 text-xs font-semibold text-white transition-colors hover:border-[#FE6807] hover:text-[#FE6807]"
@@ -160,6 +182,41 @@ export const MainLayout = ({ children }) => {
           </div>
         </div>
       </footer>
+      {/* Popup yêu cầu xác minh người bán */}
+      {showSellerPopup && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="seller-verify-popup-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-[#E5E5E9] bg-white p-6 shadow-xl">
+            <div className="mb-3 flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-2xl text-[#FE6807]">storefront</span>
+              <h2 id="seller-verify-popup-title" className="text-lg font-bold text-[#09080E]">
+                Chưa xác minh người bán
+              </h2>
+            </div>
+            <p className="text-sm leading-relaxed text-[#62626C]">
+              Bạn cần xác minh người bán để sử dụng tính năng này
+            </p>
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <Button type="button" variant="outline" onClick={() => setShowSellerPopup(false)}>
+                Để sau
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  setShowSellerPopup(false);
+                  navigate(paths.app.profile.getHref('seller'));
+                }}
+              >
+                Xác minh ngay
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

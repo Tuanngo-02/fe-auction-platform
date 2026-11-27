@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 
 import { Head } from '@/components/seo/head';
 import { paths } from '@/config/paths';
@@ -22,6 +21,34 @@ const profileMenuItems = [
   { id: 'seller', label: 'Xác minh người bán', badge: 'Nâng cấp', icon: 'storefront' },
   { id: 'activities', label: 'Lịch sử hoạt động', icon: 'manage_search' },
 ];
+
+const ROLE_LABELS = {
+  ROLE_SUPER_ADMIN: 'Super Admin',
+  ROLE_SYSTEM_ADMIN: 'Quản trị hệ thống',
+  ROLE_AUCTION_ADMIN: 'Quản trị đấu giá',
+  ROLE_FINANCE_ADMIN: 'Quản trị tài chính',
+  ROLE_SUPPORT_ADMIN: 'Quản trị hỗ trợ',
+  ROLE_SELLER: 'Người bán',
+  ROLE_BIDDER: 'Đấu giá viên',
+};
+
+const formatUserRoleLabel = (roles = []) => {
+  const priority = [
+    'ROLE_SUPER_ADMIN',
+    'ROLE_SYSTEM_ADMIN',
+    'ROLE_AUCTION_ADMIN',
+    'ROLE_FINANCE_ADMIN',
+    'ROLE_SUPPORT_ADMIN',
+  ];
+  const adminRoles = priority.filter((r) => roles.includes(r)).map((r) => ROLE_LABELS[r]);
+  if (adminRoles.length > 0) return adminRoles.join(' & ');
+
+  const userRoles = ['ROLE_BIDDER', 'ROLE_SELLER'].filter((r) => roles.includes(r));
+  if (userRoles.includes('ROLE_BIDDER')) return ROLE_LABELS.ROLE_BIDDER;
+  if (userRoles.includes('ROLE_SELLER')) return ROLE_LABELS.ROLE_SELLER;
+
+  return roles.length > 0 ? roles.map((r) => ROLE_LABELS[r] || r.replace(/^ROLE_/, '')).join(' & ') : 'Thành viên';
+};
 
 const ProfileOverview = ({ user, onTabChange }) => {
   const displayName = user.fullName || user.email || 'Thành viên';
@@ -265,7 +292,7 @@ const ProfileOverview = ({ user, onTabChange }) => {
           <div className="rounded-xl border border-[#E5E5E9] bg-[#F7F7F5] p-4">
             <div className="text-xs font-medium text-[#62626C]">Vai trò hiện tại</div>
             <div className="mt-1 flex items-center gap-1.5 text-base font-bold text-[#09080E]">
-              <span>{user.roles?.includes('ROLE_SELLER') ? 'Seller & Bidder' : 'Bidder'}</span>
+              <span>{formatUserRoleLabel(user.roles)}</span>
               <span className="material-symbols-outlined text-base text-[#FE6807]">gavel</span>
             </div>
             <div className="mt-1 text-[11px] leading-normal text-[#62626C]">
@@ -303,7 +330,9 @@ const ProfileOverview = ({ user, onTabChange }) => {
 };
 
 const ProfileRoute = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'overview';
+  const setActiveTab = (tab) => setSearchParams(tab === 'overview' ? {} : { tab });
   const user = useUser();
   const u = user.data;
   if (!u) return null;
@@ -387,7 +416,7 @@ const ProfileRoute = () => {
                 <p className="font-mono text-xs text-[#62626C]">BID-{u.userId}</p>
                 <div className="mt-1 inline-flex items-center gap-1.5 rounded border border-[#BBF7D0] bg-[#DCFCE7] px-2 py-0.5 text-[11px] font-semibold text-[#166534]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#166534]" />
-                  <span>Đấu giá viên (Online)</span>
+                  <span>{formatUserRoleLabel(u.roles)} (Online)</span>
                 </div>
               </div>
             </div>
